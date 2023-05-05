@@ -1,4 +1,4 @@
 package project;
 
-public interface IPartnerRepo extends Repository<Integer, Partner>{
+public interface IPartnerRepo extends Repository<Partner, Integer>{
 }

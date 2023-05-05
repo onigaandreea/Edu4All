@@ -1,4 +1,4 @@
 package project;
 
-public interface ISocialCaseRepo extends Repository<Integer, SocialCase>{
+public interface ISocialCaseRepo extends Repository<SocialCase, Integer>{
 }

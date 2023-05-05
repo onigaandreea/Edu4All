@@ -3,20 +3,20 @@ package project;
 import java.util.Objects;
 
 public class SocialCase extends Entity<Integer>{
-    private String name;
+    private String title;
     private String description;
 
-    public SocialCase(String name, String description) {
-        this.name = name;
+    public SocialCase(String title, String description) {
+        this.title = title;
         this.description = description;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -31,18 +31,18 @@ public class SocialCase extends Entity<Integer>{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SocialCase that)) return false;
-        return name.equals(that.name) && Objects.equals(description, that.description);
+        return title.equals(that.title) && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description);
+        return Objects.hash(title, description);
     }
 
     @Override
     public String toString() {
         return "SocialCase{" +
-                "name='" + name + '\'' +
+                "title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 '}';
     }

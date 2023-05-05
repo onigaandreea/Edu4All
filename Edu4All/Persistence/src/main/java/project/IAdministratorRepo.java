@@ -1,4 +1,4 @@
 package project;
 
-public interface IAdministratorRepo extends Repository<Integer, Administrator>{
+public interface IAdministratorRepo extends Repository<Administrator, Integer>{
 }
