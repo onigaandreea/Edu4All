@@ -1,0 +1,4 @@
+rootProject.name = 'Edu4All'
+include 'Model'
+include 'Persistence'
+
