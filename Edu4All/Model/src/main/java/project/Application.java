@@ -1,6 +1,6 @@
 package project;
 
-public class Application extends Entity<Integer>{
+public class Application{
     private Program program;
     private Volunteer volunteer;
 
