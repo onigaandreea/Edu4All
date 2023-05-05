@@ -11,23 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class AccountRepository implements IAccountRepo{
+public class DonorRepository implements IDonorRepo{
     private JDBCUtils dbUtils;
     private static final Logger logger= LogManager.getLogger();
+    private IAccountRepo accountRepo;
 
-    public AccountRepository(Properties properties) {
+    public DonorRepository(Properties properties, IAccountRepo accountRepo) {
         logger.info("Initializing AccountRepository with properties: {} ",properties);
         this.dbUtils = new JDBCUtils(properties);
+        this.accountRepo = accountRepo;
     }
-
     @Override
-    public void add(Account elem) {
+    public void add(Donor elem) {
         logger.traceEntry("saving task {} ", elem);
         Connection con= dbUtils.getConnection();
-        try(PreparedStatement preStmt=con.prepareStatement("insert into Account (accountNr, CVV, expDate) values (?, ?, ?)")){
-            preStmt.setString(1, elem.getAccountNr());
-            preStmt.setString(2, elem.getCVV());
-            preStmt.setString(3, elem.getExpDate());
+        try(PreparedStatement preStmt=con.prepareStatement("insert into Donor (firstName, lastName, email, idA) values (?, ?, ?, ?)")){
+            preStmt.setString(1, elem.getFirstName());
+            preStmt.setString(2, elem.getLastName());
+            preStmt.setString(3, elem.getEmail());
+            preStmt.setInt(4, elem.getAccount().getId());
             int result= preStmt.executeUpdate();
             logger.trace("Saved {} instances", elem);
         }catch (SQLException ex){
@@ -38,10 +40,10 @@ public class AccountRepository implements IAccountRepo{
     }
 
     @Override
-    public void delete(Account elem) {
+    public void delete(Donor elem) {
         logger.traceEntry("deleting task {} ", elem);
         Connection con= dbUtils.getConnection();
-        try(PreparedStatement preStmt=con.prepareStatement("delete * from Account where idA = ?")){
+        try(PreparedStatement preStmt=con.prepareStatement("delete * from Donor where id = ?")){
             preStmt.setInt(1, elem.getId());
             int result= preStmt.executeUpdate();
             logger.trace("Deleted {} instances", elem);
@@ -53,14 +55,15 @@ public class AccountRepository implements IAccountRepo{
     }
 
     @Override
-    public void update(Account elem, Integer id) {
+    public void update(Donor elem, Integer id) {
         logger.traceEntry("updating task {} ", elem);
         Connection con= dbUtils.getConnection();
-        try(PreparedStatement preStmt=con.prepareStatement("update Account set accountNr = ?, CVV = ? , expDate = ? where idA = ?")){
-            preStmt.setString(1, elem.getAccountNr());
-            preStmt.setString(2, elem.getCVV());
-            preStmt.setString(3, elem.getExpDate());
-            preStmt.setInt(4, id);
+        try(PreparedStatement preStmt=con.prepareStatement("update Donor set firstName = ?, lastName = ?, email = ?, idA = ? where id = ?")){
+            preStmt.setString(1, elem.getFirstName());
+            preStmt.setString(2, elem.getLastName());
+            preStmt.setString(3, elem.getEmail());
+            preStmt.setInt(4, elem.getAccount().getId());
+            preStmt.setInt(5, id);
             int result= preStmt.executeUpdate();
             logger.trace("Updated {} instances", elem);
         }catch (SQLException ex){
@@ -71,21 +74,23 @@ public class AccountRepository implements IAccountRepo{
     }
 
     @Override
-    public Account findById(Integer id) {
+    public Donor findById(Integer id) {
         logger.traceEntry();
         Connection con= dbUtils.getConnection();
-        try (PreparedStatement preStmt=con.prepareStatement("select * from Account where idA = ?")){
+        try (PreparedStatement preStmt=con.prepareStatement("select * from Donor where id = ?")){
             preStmt.setInt(1, id);
             try (ResultSet result= preStmt.executeQuery()){
                 while (result.next()){
+                    int idD = result.getInt("id");
                     int idA = result.getInt("idA");
-                    String accountNr = result.getString("accountNr");
-                    String CVV = result.getString("CVV");
-                    String expDate = result.getString("expDate");
+                    String firstName = result.getString("firstName");
+                    String lastName = result.getString("lastName");
+                    String email = result.getString("email");
 
-                    Account account = new Account(accountNr, CVV, expDate);
-                    account.setId(idA);
-                    return account;
+                    Account account = accountRepo.findById(idA);
+                    Donor donor = new Donor(firstName, lastName, email, account);
+                    donor.setId(idD);
+                    return donor;
                 }
             }
         }catch (SQLException ex){
@@ -97,28 +102,30 @@ public class AccountRepository implements IAccountRepo{
     }
 
     @Override
-    public Iterable<Account> findAll() {
+    public Iterable<Donor> findAll() {
         logger.traceEntry();
         Connection con= dbUtils.getConnection();
-        List<Account> accounts = new ArrayList<>();
-        try (PreparedStatement preStmt=con.prepareStatement("select * from Account")){
+        List<Donor> donors = new ArrayList<>();
+        try (PreparedStatement preStmt=con.prepareStatement("select * from Donor")){
             try (ResultSet result= preStmt.executeQuery()){
                 while (result.next()){
+                    int idD = result.getInt("id");
                     int idA = result.getInt("idA");
-                    String accountNr = result.getString("accountNr");
-                    String CVV = result.getString("CVV");
-                    String expDate = result.getString("expDate");
+                    String firstName = result.getString("firstName");
+                    String lastName = result.getString("lastName");
+                    String email = result.getString("email");
 
-                    Account account = new Account(accountNr, CVV, expDate);
-                    account.setId(idA);
-                    accounts.add(account);
+                    Account account = accountRepo.findById(idA);
+                    Donor donor = new Donor(firstName, lastName, email, account);
+                    donor.setId(idD);
+                    donors.add(donor);
                 }
             }
         }catch (SQLException ex){
             logger.error(ex);
             System.err.println("Error DB " + ex);
         }
-        logger.traceExit(accounts);
-        return accounts;
+        logger.traceExit(donors);
+        return donors;
     }
 }
