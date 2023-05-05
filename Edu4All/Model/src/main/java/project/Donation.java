@@ -3,7 +3,7 @@ package project;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Donation extends Entity<Integer>{
+public class Donation{
 
     private Donor donor;
     private SocialCase socialCase;
