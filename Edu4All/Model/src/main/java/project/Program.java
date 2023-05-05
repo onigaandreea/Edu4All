@@ -59,6 +59,7 @@ public class Program extends Entity<Integer>{
     @Override
     public String toString() {
         return "Program{" +
+                "id='" + super.getId()+'\''+
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", startDate=" + startDate +
