@@ -1,4 +1,4 @@
 package project;
 
-public interface IAccountRepo extends Repository<Integer, Account>{
+public interface IAccountRepo extends Repository<Account,Integer>{
 }

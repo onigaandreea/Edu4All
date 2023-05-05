@@ -1,4 +1,4 @@
 package project;
 
-public interface IDonorRepo extends Repository<Integer, Donor>{
+public interface IDonorRepo extends Repository<Donor,Integer>{
 }
